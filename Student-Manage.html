@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    /* Paste your CSS code here */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quản lý Sinh viên</h1>
+  <form>
+    <label for="name">Tên Sinh viên:</label>
+    <input type="text" id="name" required>
+    <label for="id">Mã Sinh viên:</label>
+    <input type="text" id="id" required>
+    <button type="button" onclick="addStudent()">Thêm</button>
+  </form>
+
+  <h2>Danh sách Sinh viên</h2>
+  <input type="text" id="search" oninput="searchStudents()" placeholder="Tìm kiếm...">
+  <table id="studentTable">
+    <tr>
+      <th>Tên</th>
+      <th>Mã</th>
+      <th>Hành động</th>
+    </tr>
+  </table>
+
+  <script>
+    const students = [];
+
+    function addStudent() {
+      const name = document.getElementById("name").value;
+      const id = document.getElementById("id").value;
+      if (name && id) {
+        students.push({ name, id });
+        displayStudents();
+        clearInputFields();
+      }
+    }
+
+    function displayStudents() {
+      const table = document.getElementById("studentTable");
+      table.innerHTML = `
+        <tr>
+          <th>Tên</th>
+          <th>Mã</th>
+          <th>Hành động</th>
+        </tr>
+      `;
+
+      students.forEach((student, index) => {
+        const row = table.insertRow();
+        row.innerHTML = `
+          <td>${student.name}</td>
+          <td>${student.id}</td>
+          <td>
+            <button onclick="editStudent(${index})">Sửa</button>
+            <button onclick="deleteStudent(${index})">Xóa</button>
+          </td>
+        `;
+      });
+    }
+
+    function clearInputFields() {
+      document.getElementById("name").value = "";
+      document.getElementById("id").value = "";
+    }
+
+    function editStudent(index) {
+      const student = students[index];
+      const newName = prompt("Tên mới:", student.name);
+      const newId = prompt("Mã mới:", student.id);
+      if (newName && newId) {
+        students[index] = { name: newName, id: newId };
+        displayStudents();
+      }
+    }
+
+    function deleteStudent(index) {
+      if (confirm("Bạn có chắc chắn muốn xóa sinh viên này không?")) {
+        students.splice(index, 1);
+        displayStudents();
+      }
+    }
+
+    function searchStudents() {
+      const keyword = document.getElementById("search").value.toLowerCase();
+      const filteredStudents = students.filter(student => {
+        return student.name.toLowerCase().includes(keyword) || student.id.toLowerCase().includes(keyword);
+      });
+      displayFilteredStudents(filteredStudents);
+    }
+
+    function displayFilteredStudents(filteredStudents) {
+      const table = document.getElementById("studentTable");
+      table.innerHTML = `
+        <tr>
+          <th>Tên</th>
+          <th>Mã</th>
+          <th>Hành động</th>
+        </tr>
+      `;
+
+      filteredStudents.forEach((student, index) => {
+        const row = table.insertRow();
+        row.innerHTML = `
+          <td>${student.name}</td>
+          <td>${student.id}</td>
+          <td>
+            <button onclick="editStudent(${students.indexOf(student)})">Sửa</button>
+            <button onclick="deleteStudent(${students.indexOf(student)})">Xóa</button>
+          </td>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
